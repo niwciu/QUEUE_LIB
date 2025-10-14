@@ -1,18 +1,18 @@
 /**
  * @file queue.c
  * @author niwciu (niwciu@gmail.com)
- * @brief 
+ * @brief
  * @version 1.0.0
  * @date 2025-10-14
- * 
+ *
  * @copyright Copyright (c) 2025
- * 
+ *
  */
 
 #include "queue.h"
 #include <stdio.h>
 
-static void copy_bytes(void * restrict dst, const void * restrict src, uint16_t size);
+static void copy_bytes(void *restrict dst, const void *restrict src, uint16_t size);
 
 /**
  * @brief Initializes a queue instance.
@@ -38,7 +38,6 @@ queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint1
 
     return QUEUE_OK;
 }
-
 
 /**
  * @brief Pushes an element to the queue.
@@ -137,7 +136,7 @@ bool queue_is_full(const queue_t *q)
  * @note  This deterministic implementation avoids non-deterministic behavior
  *        and standard library dependencies, ensuring compliance with MISRA-C.
  */
-static void copy_bytes(void * restrict dst, const void * restrict src, uint16_t size)
+static void copy_bytes(void *restrict dst, const void *restrict src, uint16_t size)
 {
     uint8_t *d = (uint8_t *)dst;
     const uint8_t *s = (const uint8_t *)src;

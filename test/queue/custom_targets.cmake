@@ -113,12 +113,12 @@ endif()
 add_custom_target(format  clang-format 
 							-i 
 							-style=file 
-							../../../src/*.c 
-							../../../src/*.h
+							../../../lib/queue/*.c 
+							../../../lib/queue/*.h
 )
 add_custom_target(format_test  clang-format 
 								-i 
 								-style=file 
 								../*.c 
-								../*.h
+								# ../*.h
 )

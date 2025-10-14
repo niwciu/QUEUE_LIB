@@ -7,8 +7,12 @@ static queue_t q;
 
 TEST_GROUP(queue_init);
 
-TEST_SETUP(queue_init) {}
-TEST_TEAR_DOWN(queue_init) {}
+TEST_SETUP(queue_init)
+{
+}
+TEST_TEAR_DOWN(queue_init)
+{
+}
 
 TEST(queue_init, GivenValidParamsThenQueueIsInitializedCorrectly)
 {
@@ -45,4 +49,3 @@ TEST(queue_init, GivenZeroCapacityThenReturnsError)
     queue_status_t status = queue_init(&q, test_buffer, sizeof(int), 0);
     TEST_ASSERT_EQUAL(QUEUE_ERROR, status);
 }
-

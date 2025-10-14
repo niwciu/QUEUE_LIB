@@ -22,7 +22,6 @@ TEST_TEAR_DOWN(queue)
     /* Cleanup after every test */
 }
 
-
 TEST(queue, GivenEmptyQueueWhenPushOneItemThenQueueIsNotEmpty)
 {
     int value = 10;
@@ -30,7 +29,6 @@ TEST(queue, GivenEmptyQueueWhenPushOneItemThenQueueIsNotEmpty)
     TEST_ASSERT_EQUAL(QUEUE_OK, result);
     TEST_ASSERT_FALSE(queue_is_empty(&q));
 }
-
 
 TEST(queue, GivenFullQueueWhenPushItemThenPushFails)
 {
@@ -45,11 +43,11 @@ TEST(queue, GivenFullQueueWhenPushItemThenPushFails)
     TEST_ASSERT_EQUAL(QUEUE_FULL, result);
 }
 
-
 TEST(queue, GivenNonEmptyQueueWhenPopItemThenReturnsCorrectValue)
 {
     int input[] = {10, 20, 30};
-    for (int i = 0; i < 3; i++) queue_push(&q, &input[i]);
+    for (int i = 0; i < 3; i++)
+        queue_push(&q, &input[i]);
 
     int output = 0;
     queue_pop(&q, &output);
@@ -59,7 +57,6 @@ TEST(queue, GivenNonEmptyQueueWhenPopItemThenReturnsCorrectValue)
     TEST_ASSERT_EQUAL_INT(20, output);
 }
 
-
 TEST(queue, GivenEmptyQueueWhenPopThenReturnsQueueEmptyStatus)
 {
     int value = 0;
@@ -67,14 +64,14 @@ TEST(queue, GivenEmptyQueueWhenPopThenReturnsQueueEmptyStatus)
     TEST_ASSERT_EQUAL(QUEUE_EMPTY, result);
 }
 
-
 TEST(queue, GivenQueueWhenPushAndPopInLoopThenBehavesAsFifo)
 {
     int input[] = {1, 2, 3, 4, 5};
     int output = 0;
 
     // Push first 3
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q, &input[i]));
     }
 
@@ -113,7 +110,8 @@ TEST(queue, GivenQueueWhenPopNullPointerThenReturnsError)
 TEST(queue, GivenQueueWhenPushUntilFullThenCountMatchesCapacity)
 {
     int value = 42;
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+    for (int i = 0; i < QUEUE_CAPACITY; i++)
+    {
         TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q, &value));
     }
     TEST_ASSERT_TRUE(queue_is_full(&q));
@@ -125,11 +123,13 @@ TEST(queue, GivenQueueWhenPopAllItemsThenQueueIsEmpty)
 {
     int input[] = {5, 6, 7};
     int output = 0;
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+    for (int i = 0; i < QUEUE_CAPACITY; i++)
+    {
         queue_push(&q, &input[i]);
     }
 
-    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+    for (int i = 0; i < QUEUE_CAPACITY; i++)
+    {
         TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&q, &output));
         TEST_ASSERT_EQUAL_INT(input[i], output);
     }
@@ -137,4 +137,3 @@ TEST(queue, GivenQueueWhenPopAllItemsThenQueueIsEmpty)
     TEST_ASSERT_TRUE(queue_is_empty(&q));
     TEST_ASSERT_FALSE(queue_is_full(&q));
 }
-
