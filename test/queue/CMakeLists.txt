@@ -22,60 +22,52 @@
 # 			2. make ccr -> code coverage report generation 
 # 
 #############################################################################################################################
-cmake_minimum_required(VERSION 3.10)
-
+cmake_minimum_required(VERSION 3.20)
 project(QUEUE_test C)
 
-add_subdirectory(../unity unity)
+# --- Add subdirectories for libraries ---
+add_subdirectory(../unity unity_build)          # creates 'unity' static library
+add_subdirectory(../../lib/queue queue_build)  # creates 'queue_lib' static library
 
+# --- Include custom targets ---
 set(CUSTOM_TARGETS_FILE_DIR ./custom_targets.cmake)
+include(${CUSTOM_TARGETS_FILE_DIR})
 
-set(CMAKE_C_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-if ("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
-elseif ("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
-endif()
-
-set(INCLUDE_DIRS
-	../../src
-)
-
-set(TEST_INCLUDE_DIRS
-	..
-	.
-)
-
-set(SRCS
-	#../../src/tested_module_folder/tested_module.c
-	../../src/queue.c
-)
-
+# --- Test source files ---
 set(TEST_SRCS
     queue_test_main.c
     queue_test_runner.c
     queue_test.c
-	#mock_module.c
+    # mock_module.c   # uncomment if needed
 )
 
-set(GLOBAL_DEFINES
-	-DUNIT_TESTS
-)
-# set -g3 flag for enabling debug on developing maching
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3 -fshort-enums")
+# --- Create test executable ---
+add_executable(${PROJECT_NAME} ${TEST_SRCS})
 
-include(${CUSTOM_TARGETS_FILE_DIR})
+# --- Link precompiled libraries (Queue + Unity) ---
+target_link_libraries(${PROJECT_NAME} PRIVATE queue_lib unity)
 
-include_directories(${INCLUDE_DIRS} ${TEST_INCLUDE_DIRS})
-add_definitions(${GLOBAL_DEFINES})
+# --- Optional: include directories for test sources ---
+# biblioteki propagują include path automatycznie, więc tu wystarczy katalog z testami
+target_include_directories(${PROJECT_NAME} PRIVATE ..)
 
-link_libraries(unity)
-add_executable(${PROJECT_NAME} ${SRCS} ${TEST_SRCS})
+# --- Compiler definitions for test target ---
+target_compile_definitions(${PROJECT_NAME} PRIVATE UNIT_TESTS)
 
-find_library(HAVE_LIB_M m sin "")                                                                                                                                                                                                                               
-if (HAVE_LIB_M)                                                                                                                          
-	target_link_libraries(${PROJECT_NAME} PUBLIC m)                                                                                                      
-endif (HAVE_LIB_M)
+# --- Compiler flags ---
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g3 -fshort-enums")
+if("${CMAKE_C_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fdiagnostics-color=always")
+elseif("${CMAKE_C_COMPILER_ID}" STREQUAL "Clang")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fcolor-diagnostics")
+endif()
 
+# --- Optional: link math library if available ---
+find_library(HAVE_LIB_M m)
+if(HAVE_LIB_M)
+    target_link_libraries(${PROJECT_NAME} PRIVATE m)
+endif()
+
+# --- Optional: coverage flags ---
 target_compile_options(${PROJECT_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
 target_link_options(${PROJECT_NAME} PRIVATE -fprofile-arcs)
