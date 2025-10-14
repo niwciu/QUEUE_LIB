@@ -21,12 +21,12 @@ static void copy_bytes(void * restrict dst, const void * restrict src, uint16_t 
  * @param[in]     element_size  Size of each element in bytes.
  * @param[in]     capacity      Maximum number of elements that can be stored.
  */
-void queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity)
+queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity)
 {
     if ((q == NULL) || (buffer == NULL) || (element_size == 0U) || (capacity == 0U))
     {
         /* Invalid parameters – initialization aborted */
-        return;
+        return QUEUE_ERROR;
     }
 
     q->buffer = buffer;
@@ -35,7 +35,10 @@ void queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capaci
     q->head = 0U;
     q->tail = 0U;
     q->count = 0U;
+
+    return QUEUE_OK;
 }
+
 
 /**
  * @brief Pushes an element to the queue.

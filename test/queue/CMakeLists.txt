@@ -38,6 +38,7 @@ set(TEST_SRCS
     queue_test_main.c
     queue_test_runner.c
     queue_test.c
+	queue_init_test.c
     # mock_module.c   # uncomment if needed
 )
 

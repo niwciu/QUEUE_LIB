@@ -22,11 +22,6 @@ TEST_TEAR_DOWN(queue)
     /* Cleanup after every test */
 }
 
-TEST(queue, FirstTest)
-{
-    TEST_FAIL_MESSAGE("Implement your test!");
-}
-
 
 TEST(queue, GivenEmptyQueueWhenPushOneItemThenQueueIsNotEmpty)
 {
@@ -102,3 +97,44 @@ TEST(queue, GivenQueueWhenPushAndPopInLoopThenBehavesAsFifo)
 
     TEST_ASSERT_TRUE(queue_is_empty(&q));
 }
+
+TEST(queue, GivenQueueWhenPushNullPointerThenReturnsError)
+{
+    queue_status_t result = queue_push(&q, NULL);
+    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
+}
+
+TEST(queue, GivenQueueWhenPopNullPointerThenReturnsError)
+{
+    queue_status_t result = queue_pop(&q, NULL);
+    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
+}
+
+TEST(queue, GivenQueueWhenPushUntilFullThenCountMatchesCapacity)
+{
+    int value = 42;
+    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+        TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q, &value));
+    }
+    TEST_ASSERT_TRUE(queue_is_full(&q));
+    TEST_ASSERT_FALSE(queue_is_empty(&q));
+    TEST_ASSERT_EQUAL(QUEUE_CAPACITY, q.count);
+}
+
+TEST(queue, GivenQueueWhenPopAllItemsThenQueueIsEmpty)
+{
+    int input[] = {5, 6, 7};
+    int output = 0;
+    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+        queue_push(&q, &input[i]);
+    }
+
+    for (int i = 0; i < QUEUE_CAPACITY; i++) {
+        TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&q, &output));
+        TEST_ASSERT_EQUAL_INT(input[i], output);
+    }
+
+    TEST_ASSERT_TRUE(queue_is_empty(&q));
+    TEST_ASSERT_FALSE(queue_is_full(&q));
+}
+

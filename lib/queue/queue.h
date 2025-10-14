@@ -50,7 +50,7 @@ typedef struct
 } queue_t;
 
 
-void queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity);
+queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity);
 queue_status_t queue_push(queue_t *q, const void *item);
 queue_status_t queue_pop(queue_t *q, void *item);
 bool queue_is_empty(const queue_t *q);
