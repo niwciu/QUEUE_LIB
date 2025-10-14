@@ -90,16 +90,16 @@ add_custom_target(ccr
 	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
 	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/
 	COMMAND gcovr 
-				-r ../../../src 
+				-r ../../../lib/queue 
 				--json ../../../reports/CCR/JSON_ALL/coverage_queue.json
-				--json-base  src
+				--json-base  lib/queue
 				--html-details ../../../reports/CCR/queue_report.html
 				--html-theme github.dark-green
 				.
 )
 		
 add_custom_target(ccc gcovr  
-						-r ../../../src
+						-r ../../../lib/queue
 						--fail-under-line 90
 						.
 )

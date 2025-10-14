@@ -7,6 +7,11 @@ add_library(queue_lib STATIC
 set_target_properties(queue_lib PROPERTIES 
   OUTPUT_NAME "queue_lib"
   PREFIX ""
-  )
+)
 
 target_include_directories(queue_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# --- Coverage instrumentation (tylko jeśli build dla testów) ---
+target_compile_options(queue_lib PRIVATE -fprofile-arcs -ftest-coverage)
+target_link_options(queue_lib PRIVATE -fprofile-arcs)
+
