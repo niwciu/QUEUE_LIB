@@ -5,6 +5,8 @@ modules:
       - format_test
       - run
       - cppcheck
+      - ccm
+      - ccc
       - ccmr
       - ccr
       - ccra
