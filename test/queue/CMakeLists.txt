@@ -42,6 +42,10 @@ set(TEST_SRCS
     # mock_module.c   # uncomment if needed
 )
 
+set(GLOBAL_DEFINES
+	-DUNIT_TESTS
+)
+
 # --- Create test executable ---
 add_executable(${PROJECT_NAME} ${TEST_SRCS})
 
@@ -52,8 +56,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE queue_lib unity)
 # biblioteki propagują include path automatycznie, więc tu wystarczy katalog z testami
 target_include_directories(${PROJECT_NAME} PRIVATE ..)
 
-# --- Compiler definitions for test target ---
-target_compile_definitions(${PROJECT_NAME} PRIVATE UNIT_TESTS)
+# --- Compiler global definitions for test target ---
+target_compile_definitions(queue_lib PRIVATE ${GLOBAL_DEFINES})
 
 # --- Compiler flags ---
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g3 -fshort-enums")

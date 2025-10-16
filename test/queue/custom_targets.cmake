@@ -21,7 +21,7 @@ else()
 endif()
 # Prints CCM for src folder in the console
 add_custom_target(ccm lizard 
-						../../../src/ 
+						../../../lib/queue 
 						--CCN 12 -Tnloc=30 
 						-a 4 
 						--languages cpp 
@@ -36,7 +36,7 @@ add_custom_command(
 add_custom_target(ccmr 
 	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCM/
 	COMMAND lizard 
-				../../../src/ 
+				../../../lib/queue 
 				--CCN 12 
 				-Tnloc=30 
 				-a 4 
@@ -54,7 +54,7 @@ else()
 	message(STATUS "CppCheck was not found. \r\n\tInstall CppCheck to get predefined targets for static analize")
 endif()
 add_custom_target(cppcheck cppcheck
-					../../../src
+					../../../lib/queue
 					../../../test/queue
 					-i../../../test/queue/out
 					--enable=all
@@ -103,6 +103,25 @@ add_custom_target(ccc gcovr
 						--fail-under-line 90
 						.
 )
+
+add_custom_target(ccca gcovr  
+						-r ../../../ 
+						--json-add-tracefile \"../../../reports/CCR/JSON_ALL/coverage_*.json\"  
+						.
+)
+						
+add_custom_target(ccra  
+	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
+	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/
+	COMMAND gcovr 
+				-r ../../../ 
+				--json-add-tracefile \"../../../reports/CCR/JSON_ALL/coverage_*.json\"  
+				--html-details -o ../../../reports/CCR/JSON_ALL/HTML_OUT/project_coverage.html
+				--html-theme github.dark-green
+				.
+)
+add_dependencies(ccra ccr)
+add_dependencies(ccca ccr)
 
 find_program(CLANG_FORMAT clang-format)
 if(CLANG_FORMAT)
