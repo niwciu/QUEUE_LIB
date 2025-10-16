@@ -14,7 +14,7 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 
 <!-- <img src='https://coveralls.io/repos/github/niwciu/LCD_HD44780/badge.svg?branch=feature/code_coverage_page_deploy' alt='Coverage Status' /></a> -->
 
-<b><a href='https://niwciu.github.io/QUEUE_LIB/reports/CCR/gcovr_report.html'>Library GCOVR Report</a></b>  
+<b><a href='https://niwciu.github.io/QUEUE_LIB/reports/gcovr.html'>Library GCOVR Report</a></b>  
 <b><a href='https://niwciu.github.io/QUEUE_LIB/reports/code_complexity_report.html'>Library Code Complexity Report</a></b>  <br><br>
 <!-- <b><a href='https://niwciu.github.io/QUEUE_LIB/doc/LCD_HD44780_lib_doc/html/index.html'>Code Documentation </a></b>   -->
 
