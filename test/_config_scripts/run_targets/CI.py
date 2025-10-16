@@ -307,7 +307,7 @@ def main():
         if report.lower() == 'ccm':
             reports_to_open.append("../../../reports/CCM/index.html")
         elif report.lower() == 'ccr':
-            reports_to_open.append("../ ../reports/CCR/JSON_ALL/HTML_OUT/project_coverage.html")
+            reports_to_open.append("../../../reports/CCR/JSON_ALL/HTML_OUT/project_coverage.html")
         else:
             # Dla innych raportów, traktujemy je jako pełne ścieżki
             if os.path.exists(report):
