@@ -25,13 +25,35 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 ## 📁 File structure
 
 ```
-/queue/
+/queue_lib/
 │
-├── queue.h        # Public API header
-├── queue.c        # Implementation (MISRA-C compliant)
-├── test_queue.c   # Unit tests (Unity)
-└── examples/
-    └── main.c     # Log queue example
+├── .github/
+|   └── workflows
+|       ├── CI_Pipeline.yml         # CI action
+|       └── Page_deploy.yml         # Library web page deploy action
+├── doc/                            # doc folder
+├── examples/                       # Ready to run examples
+|   ├── 1_basic_integer_queue      
+|   └── 2_log_queue                 
+├── src/       
+|   ├── queue.c                     # Implementation (MISRA-C compliant)
+|   └── queue.h                     # Public API header
+└── test/ 
+    ├── _config_scripts/        
+    |   ├── CI/  
+    |   |   └── CI.py               # Python scripit runnig specifyed target in config.yaml
+    |   |   └── config.yaml         # CI config file for setup and customize CI workflow            
+    |   └── venv_setup/
+    |       └── requirements.txt    # Python tools required by scripts in project
+    |       └── venv_setup.py       # Script for automated creating of virtual environment and install requirements
+    ├── queue/                  
+    |   └── ...                     # Unit tests (Unity)
+    ├── template/               
+    |   └── ...                     # test module template files
+    └── unity/                  
+        └── ...                     # Unit test framework files
+
+    
 ```
 
 ---
@@ -40,7 +62,7 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 
 ### `queue_init`
 ```c
-void queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity);
+queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity);
 ```
 Initializes a queue instance.
 
@@ -189,10 +211,29 @@ int main(void)
 LOG: System initialized
 LOG: Temperature sensor ready
 LOG: Main loop started
-LOG: [Queue is empty]
 ```
 
 ---
+## ▶️ Running examples:
+### 🚀 1_basic_integer_queue
+1. Go to project main folder. 
+2. Open examples folder, compile and run the example
+``` bash
+cd examples/1_basic_integer_queue
+cmake -S./ -B out -G"Unix Makefiles"
+cd out
+make run
+```
+
+### 🚀 2_log_queue
+1. Go to project main folder. 
+2. Open examples folder, compile and run the example
+``` bash
+cd examples/2_log_queue
+cmake -S./ -B out -G"Unix Makefiles"
+cd out
+make run
+```
 
 ## 🧩 Integration
 
@@ -208,11 +249,14 @@ You can compile it as part of your embedded firmware or as a portable C module.
 
 ## 🧪 Unit Tests (Unity)
 
-Example command (assuming Unity is in `./unity`):
-
-```bash
-gcc -I. queue.c test_queue.c unity/unity.c -o test_queue
-./test_queue
+Running Unit tests:
+1. Go to projekt main folder. 
+2. Open test folder, compile and run the tests
+``` bash
+cd test/queue
+cmake -S./ -B out -G"Unix Makefiles"
+cd out
+make run
 ```
 
 ---
@@ -258,3 +302,12 @@ This library is **suitable** for use in safety-critical applications
 Licensed under the MIT License (see `LICENSE` file for details).
 
 © 2025 [niwciu](mailto:niwciu@gmail.com)
+
+<br>
+<div align="center">
+
+***
+
+![myEmbeddedWayBanerWhiteSmaller](https://github.com/user-attachments/assets/f4825882-e285-4e02-a75c-68fc86ff5716)
+***
+</div>
