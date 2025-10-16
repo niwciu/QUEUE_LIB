@@ -188,7 +188,7 @@ jobs:
               uses: threeal/gcovr-action@v1.1.0
               with:
                 excludes: test
-                html-out: ./gcovr_report/modbus_gcovr_report.html
+                html-out: ./gcovr_report/gcovr.html
                 html-details: true
                 html-title: Modbus Library Test Coverage Report
                 html-theme: github.dark-green
