@@ -1,13 +1,22 @@
 # 🧩 Queue Library (MISRA-C Compliant FIFO)
 
+<!-- ![queue_header](link) -->
+
 A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIFO queue implementation written in pure C — designed for **embedded** and **safety-critical** applications (ISO 26262 / IEC 61508 / DO-178C).
 
 ---
-
-![Build](https://img.shields.io/badge/build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/tests-passing-brightgreen)
+![GitHub License](https://img.shields.io/github/license/niwciu/QUEUE_LIB) 
+![GitHub top language](https://img.shields.io/github/languages/top/niwciu/QUEUE_LIB)
+![GitHub Release](https://img.shields.io/github/v/release/niwciu/QUEUE_LIB)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/niwciu/QUEUE_LIB/main)
+![CI Pipeline](https://github.com/niwciu/QUEUE_LIB/actions/workflows/CI_Pipeline.yml/badge.svg)
 ![MISRA](https://img.shields.io/badge/MISRA-C%3A2012-blue)
-![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+<!-- <img src='https://coveralls.io/repos/github/niwciu/LCD_HD44780/badge.svg?branch=feature/code_coverage_page_deploy' alt='Coverage Status' /></a> -->
+
+<b><a href='https://niwciu.github.io/QUEUE_LIB/reports/CCR/queue_report.html'>Library GCOVR Report</a></b>  
+<b><a href='https://niwciu.github.io/QUEUE_LIB/reports/CCM/queue.html'>Library Code Complexity Report</a></b>  <br><br>
+<!-- <b><a href='https://niwciu.github.io/QUEUE_LIB/doc/LCD_HD44780_lib_doc/html/index.html'>Code Documentation </a></b>   -->
 
 ---
 
@@ -46,12 +55,9 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
     |   └── venv_setup/
     |       └── requirements.txt    # Python tools required by scripts in project
     |       └── venv_setup.py       # Script for automated creating of virtual environment and install requirements
-    ├── queue/                  
-    |   └── ...                     # Unit tests (Unity)
-    ├── template/               
-    |   └── ...                     # test module template files
-    └── unity/                  
-        └── ...                     # Unit test framework files
+    ├── queue/                      # Queue lib Unit Tests (Unity)
+    ├── template/                   # Unit Tests module template files
+    └── unity/                      # Unit Tests framework files
 
     
 ```
