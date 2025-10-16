@@ -11,7 +11,11 @@ set_target_properties(queue_lib PROPERTIES
 
 target_include_directories(queue_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# --- Coverage instrumentation (tylko jeśli build dla testów) ---
-target_compile_options(queue_lib PRIVATE -fprofile-arcs -ftest-coverage)
-target_link_options(queue_lib PRIVATE -fprofile-arcs)
+# --- Coverage instrumentation (only if building for unit tests) ---
+if(UNIT_TESTS)
+    message(STATUS "Unit tests enabled: enabling coverage instrumentation")
+
+    target_compile_options(queue_lib PRIVATE -fprofile-arcs -ftest-coverage)
+    target_link_options(queue_lib PRIVATE -fprofile-arcs -ftest-coverage)
+endif()
 
