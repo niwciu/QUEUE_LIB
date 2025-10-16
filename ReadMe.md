@@ -79,6 +79,10 @@ Initializes a queue instance.
 | `element_size` | Size of a single element (in bytes) |
 | `capacity` | Maximum number of elements in the queue |
 
+Returns one of:
+- `QUEUE_OK` – successfully initialized 
+- `QUEUE_ERROR` – Invalid parameters –> initialization aborted 
+
 ---
 
 ### `queue_push`
@@ -256,7 +260,7 @@ You can compile it as part of your embedded firmware or as a portable C module.
 ## 🧪 Unit Tests (Unity)
 
 Running Unit tests:
-1. Go to projekt main folder. 
+1. Go to project main folder. 
 2. Open test folder, compile and run the tests
 ``` bash
 cd test/queue
