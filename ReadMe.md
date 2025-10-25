@@ -1,4 +1,4 @@
-![queue_header](https://github.com/user-attachments/assets/8cf6bceb-bfab-424c-87c6-a67cf5c2862a)
+![queue_header](https://github.com/user-attachments/assets/98cc5fb6-66e3-4740-ac1f-e153519fd6dc)
 
 # 🧩 Queue Library (MISRA-C Compliant FIFO)
 A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIFO queue implementation written in pure C — designed for **embedded** and **safety-critical** applications (ISO 26262 / IEC 61508 / DO-178C).
