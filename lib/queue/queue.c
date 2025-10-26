@@ -23,20 +23,22 @@ static void copy_bytes(void *restrict dst, const void *restrict src, uint16_t si
  */
 queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity)
 {
+    queue_status_t ret_status = QUEUE_OK;
     if ((q == NULL) || (buffer == NULL) || (element_size == 0U) || (capacity == 0U))
     {
         /* Invalid parameters – initialization aborted */
-        return QUEUE_ERROR;
+        ret_status =  QUEUE_ERROR;
     }
-
-    q->buffer = buffer;
-    q->element_size = element_size;
-    q->capacity = capacity;
-    q->head = 0U;
-    q->tail = 0U;
-    q->count = 0U;
-
-    return QUEUE_OK;
+    else
+    {
+        q->buffer = buffer;
+        q->element_size = element_size;
+        q->capacity = capacity;
+        q->head = 0U;
+        q->tail = 0U;
+        q->count = 0U;
+    }
+    return ret_status;
 }
 
 /**
@@ -47,25 +49,28 @@ queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint1
  */
 queue_status_t queue_push(queue_t *q, const void *item)
 {
+    queue_status_t status = QUEUE_OK;
+
     if ((q == NULL) || (item == NULL))
     {
-        return QUEUE_ERROR;
+        status = QUEUE_ERROR;
     }
-
-    if (q->count >= q->capacity)
+    else if (q->count >= q->capacity)
     {
-        return QUEUE_FULL;
+        status = QUEUE_FULL;
+    }
+    else
+    {
+        uint8_t *base = (uint8_t *)q->buffer;
+        uint16_t offset = (uint16_t)(q->tail * q->element_size);
+
+        copy_bytes(&base[offset], item, q->element_size);
+
+        q->tail = (uint16_t)((q->tail + 1U) % q->capacity);
+        q->count++;
     }
 
-    uint8_t *base = (uint8_t *)q->buffer;
-    uint16_t offset = (uint16_t)(q->tail * q->element_size);
-
-    copy_bytes(&base[offset], item, q->element_size);
-
-    q->tail = (uint16_t)((q->tail + 1U) % q->capacity);
-    q->count++;
-
-    return QUEUE_OK;
+    return status;
 }
 
 /**
@@ -76,25 +81,26 @@ queue_status_t queue_push(queue_t *q, const void *item)
  */
 queue_status_t queue_pop(queue_t *q, void *item)
 {
+    queue_status_t ret_status = QUEUE_OK;
     if ((q == NULL) || (item == NULL))
     {
-        return QUEUE_ERROR;
+        ret_status = QUEUE_ERROR;
     }
-
-    if (q->count == 0U)
+    else if (q->count == 0U)
     {
-        return QUEUE_EMPTY;
+        ret_status = QUEUE_EMPTY;
     }
+    else
+    {
+        uint8_t *base = (uint8_t *)q->buffer;
+        uint16_t offset = (uint16_t)(q->head * q->element_size);
 
-    uint8_t *base = (uint8_t *)q->buffer;
-    uint16_t offset = (uint16_t)(q->head * q->element_size);
+        copy_bytes(item, &base[offset], q->element_size);
 
-    copy_bytes(item, &base[offset], q->element_size);
-
-    q->head = (uint16_t)((q->head + 1U) % q->capacity);
-    q->count--;
-
-    return QUEUE_OK;
+        q->head = (uint16_t)((q->head + 1U) % q->capacity);
+        q->count--;
+    }
+    return ret_status;
 }
 
 /**
