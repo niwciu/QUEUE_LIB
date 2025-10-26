@@ -66,6 +66,7 @@ nav:
   # - Examples info: examples/README.md
   - Reports: reports.md
   - Doxygen docu: doxygen/queue_lib_doc/html/index.html
+  - MISRA Deviations: compliance/MISRA_Deviations.md
 
 extra:
   social:
