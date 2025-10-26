@@ -1,8 +1,5 @@
 #include "unity/fixture/unity_fixture.h"
 #include "queue.h"
-#include <string.h>
-
-// #include "tested_module.h"
 
 #define QUEUE_CAPACITY 3
 
@@ -69,20 +66,16 @@ TEST(queue, GivenQueueWhenPushAndPopInLoopThenBehavesAsFifo)
     int input[] = {1, 2, 3, 4, 5};
     int output = 0;
 
-    // Push first 3
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < QUEUE_CAPACITY; i++)
     {
         TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q, &input[i]));
     }
 
-    // Pop one -> should be 1
     TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&q, &output));
     TEST_ASSERT_EQUAL_INT(1, output);
 
-    // Push another (wrap around)
     TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q, &input[3]));
 
-    // Pop remaining
     TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&q, &output));
     TEST_ASSERT_EQUAL_INT(2, output);
 
@@ -93,18 +86,6 @@ TEST(queue, GivenQueueWhenPushAndPopInLoopThenBehavesAsFifo)
     TEST_ASSERT_EQUAL_INT(4, output);
 
     TEST_ASSERT_TRUE(queue_is_empty(&q));
-}
-
-TEST(queue, GivenQueueWhenPushNullPointerThenReturnsError)
-{
-    queue_status_t result = queue_push(&q, NULL);
-    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
-}
-
-TEST(queue, GivenQueueWhenPopNullPointerThenReturnsError)
-{
-    queue_status_t result = queue_pop(&q, NULL);
-    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
 }
 
 TEST(queue, GivenQueueWhenPushUntilFullThenCountMatchesCapacity)
@@ -136,4 +117,21 @@ TEST(queue, GivenQueueWhenPopAllItemsThenQueueIsEmpty)
 
     TEST_ASSERT_TRUE(queue_is_empty(&q));
     TEST_ASSERT_FALSE(queue_is_full(&q));
+}
+
+TEST(queue, GivenQueueWhenInitWithNullPointerThenReturnsError)
+{
+    queue_status_t result;
+
+    result = queue_init(NULL, buffer, sizeof(int), QUEUE_CAPACITY);
+    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
+
+    result = queue_init(&q, NULL, sizeof(int), QUEUE_CAPACITY);
+    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
+
+    result = queue_init(&q, buffer, 0U, QUEUE_CAPACITY);
+    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
+
+    result = queue_init(&q, buffer, sizeof(int), 0U);
+    TEST_ASSERT_EQUAL(QUEUE_ERROR, result);
 }

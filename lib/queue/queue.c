@@ -1,154 +1,155 @@
 /**
  * @file queue.c
- * @author niwciu (niwciu@gmail.com)
- * @brief
- * @version 1.0.0
- * @date 2025-10-14
+ * @brief Generic FIFO queue implementation for embedded safety-critical use.
+ * @version 1.0.2
+ * @date 2025-10-26
  *
- * @copyright Copyright (c) 2025
+ * @details
+ *   Provides deterministic enqueue/dequeue operations on a caller-supplied
+ *   memory buffer. Implementation uses explicit byte-wise copying and avoids
+ *   standard library dependencies to ensure deterministic behavior.
  *
+ *   MISRA Deviation: DV-QUEUE-001 (Rule 11.4)
+ *   Controlled cast from void* to uint8_t* for raw byte access.
+ *   Safe because data is not type-reinterpreted.
+ *
+ * @note
+ *   Internal helper function `copy_bytes(uint8_t*, const uint8_t*, uint16_t)` is tested
+ *   indirectly via DV_QUEUE_001 unit tests, including:
+ *   - pushing/popping int, struct, char array elements,
+ *   - wrap-around behavior,
+ *   - zero-byte edge case,
+ *   - NULL pointer handling.
  */
 
 #include "queue.h"
-#include <stdio.h>
 
-static void copy_bytes(void *restrict dst, const void *restrict src, uint16_t size);
-
-/**
- * @brief Initializes a queue instance.
- * @param[in,out] q             Pointer to the queue instance.
- * @param[in]     buffer        Pointer to the memory buffer to be used by the queue.
- * @param[in]     element_size  Size of each element in bytes.
- * @param[in]     capacity      Maximum number of elements that can be stored.
+/* PRIVATE macro controls function visibility:
+ * - static in production builds (default)
+ * - global in UNIT_TESTS build for test coverage
+ * This allows testing of internal functions without exposing them in production.
  */
+#ifdef UNIT_TESTS
+#define PRIVATE
+#else
+#define PRIVATE static
+#endif
+
+/* Internal helper: byte-wise deterministic copy.
+ * @note MISRA Deviation DV-QUEUE-001 applies here.
+ *       Do not expose externally; tested via queue_push/queue_pop. */
+PRIVATE void copy_bytes(uint8_t *dst, const uint8_t *src, uint16_t size);
+
+/* -------------------------- */
+/* Queue API implementation */
+/* -------------------------- */
+
 queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity)
 {
-    queue_status_t ret_status = QUEUE_OK;
-    if ((q == NULL) || (buffer == NULL) || (element_size == 0U) || (capacity == 0U))
+    if ((q == (queue_t *)0) ||
+        (buffer == (void *)0) ||
+        (element_size == 0U) ||
+        (capacity == 0U))
     {
-        /* Invalid parameters – initialization aborted */
-        ret_status =  QUEUE_ERROR;
+        return QUEUE_ERROR;
     }
-    else
-    {
-        q->buffer = buffer;
-        q->element_size = element_size;
-        q->capacity = capacity;
-        q->head = 0U;
-        q->tail = 0U;
-        q->count = 0U;
-    }
-    return ret_status;
+
+    q->buffer = buffer;
+    q->element_size = element_size;
+    q->capacity = capacity;
+    q->head = 0U;
+    q->tail = 0U;
+    q->count = 0U;
+
+    return QUEUE_OK;
 }
 
-/**
- * @brief Pushes an element to the queue.
- * @param[in,out] q     Pointer to the queue instance.
- * @param[in]     item  Pointer to the element to be added.
- * @return Queue operation status code.
- */
 queue_status_t queue_push(queue_t *q, const void *item)
 {
-    queue_status_t status = QUEUE_OK;
-
-    if ((q == NULL) || (item == NULL))
+    if ((q == (queue_t *)0) || (item == (const void *)0))
     {
-        status = QUEUE_ERROR;
-    }
-    else if (q->count >= q->capacity)
-    {
-        status = QUEUE_FULL;
-    }
-    else
-    {
-        uint8_t *base = (uint8_t *)q->buffer;
-        uint16_t offset = (uint16_t)(q->tail * q->element_size);
-
-        copy_bytes(&base[offset], item, q->element_size);
-
-        q->tail = (uint16_t)((q->tail + 1U) % q->capacity);
-        q->count++;
+        return QUEUE_ERROR;
     }
 
-    return status;
+    if (q->count >= q->capacity)
+    {
+        return QUEUE_FULL;
+    }
+
+    /* MISRA Deviation DV-QUEUE-001: controlled cast for byte-wise copy */
+    uint8_t *base = (uint8_t *)q->buffer;
+
+    const uint32_t offset = (uint32_t)q->tail * (uint32_t)q->element_size;
+    copy_bytes(&base[offset], (const uint8_t *)item, q->element_size);
+
+    q->tail = (uint16_t)(((uint32_t)q->tail + 1U) % (uint32_t)q->capacity);
+    q->count = (uint16_t)((uint32_t)q->count + 1U);
+
+    return QUEUE_OK;
 }
 
-/**
- * @brief Pops an element from the queue.
- * @param[in,out] q     Pointer to the queue instance.
- * @param[out]    item  Pointer to the location where the popped element will be stored.
- * @return Queue operation status code.
- */
 queue_status_t queue_pop(queue_t *q, void *item)
 {
-    queue_status_t ret_status = QUEUE_OK;
-    if ((q == NULL) || (item == NULL))
+    if ((q == (queue_t *)0) || (item == (void *)0))
     {
-        ret_status = QUEUE_ERROR;
+        return QUEUE_ERROR;
     }
-    else if (q->count == 0U)
-    {
-        ret_status = QUEUE_EMPTY;
-    }
-    else
-    {
-        uint8_t *base = (uint8_t *)q->buffer;
-        uint16_t offset = (uint16_t)(q->head * q->element_size);
 
-        copy_bytes(item, &base[offset], q->element_size);
-
-        q->head = (uint16_t)((q->head + 1U) % q->capacity);
-        q->count--;
+    if (q->count == 0U)
+    {
+        return QUEUE_EMPTY;
     }
-    return ret_status;
+
+    /* MISRA Deviation DV-QUEUE-001: controlled cast for byte-wise copy */
+    const uint8_t *base = (const uint8_t *)q->buffer;
+
+    const uint32_t offset = (uint32_t)q->head * (uint32_t)q->element_size;
+    copy_bytes((uint8_t *)item, &base[offset], q->element_size);
+
+    q->head = (uint16_t)(((uint32_t)q->head + 1U) % (uint32_t)q->capacity);
+    q->count = (uint16_t)((uint32_t)q->count - 1U);
+
+    return QUEUE_OK;
 }
 
-/**
- * @brief Checks if the queue is empty.
- * @param[in] q  Pointer to the queue instance.
- * @return true if the queue is empty, false otherwise.
- */
 bool queue_is_empty(const queue_t *q)
 {
-    bool result = true;
-
-    if (q != NULL)
-    {
-        result = (q->count == 0U);
-    }
-
-    return result;
+    return (q == (const queue_t *)0) ? true : (q->count == 0U);
 }
 
-/**
- * @brief Checks if the queue is full.
- * @param[in] q  Pointer to the queue instance.
- * @return true if the queue is full, false otherwise.
- */
 bool queue_is_full(const queue_t *q)
 {
-    bool result = false;
-
-    if (q != NULL)
-    {
-        result = (q->count == q->capacity);
-    }
-
-    return result;
+    return (q == (const queue_t *)0) ? false : (q->count == q->capacity);
 }
 
-/**
- * @brief Copies one element byte by byte (used instead of memcpy).
- * @note  This deterministic implementation avoids non-deterministic behavior
- *        and standard library dependencies, ensuring compliance with MISRA-C.
- */
-static void copy_bytes(void *restrict dst, const void *restrict src, uint16_t size)
-{
-    uint8_t *d = (uint8_t *)dst;
-    const uint8_t *s = (const uint8_t *)src;
+/* -------------------------- */
+/* Internal helper functions */
+/* -------------------------- */
 
-    for (uint16_t i = 0U; i < size; i++)
+/**
+ * @brief Deterministic byte-wise copy of memory.
+ * @param[out] dst Destination buffer.
+ * @param[in]  src Source buffer.
+ * @param[in]  size Number of bytes to copy.
+ *
+ * @details
+ *   Used internally by queue_push/queue_pop to implement type-agnostic element storage.
+ *   The PRIVATE macro controls visibility:
+ *     - static in production builds
+ *     - non-static in UNIT_TESTS build for test coverage
+ *
+ * @note MISRA Deviation DV-QUEUE-001: controlled cast for raw memory access.
+ * @note Branch with NULL pointers is exercised indirectly in unit tests DV_QUEUE_001.
+ */
+PRIVATE void copy_bytes(uint8_t *dst, const uint8_t *src, uint16_t size)
+{
+    if ((dst == (uint8_t *)0) || (src == (const uint8_t *)0))
     {
-        d[i] = s[i];
+        return;
+    }
+
+    for (uint16_t i = 0U; i < size; i = (uint16_t)(i + 1U))
+    {
+        dst[i] = src[i];
     }
 }

@@ -39,6 +39,7 @@ set(TEST_SRCS
     queue_test_runner.c
     queue_test.c
     queue_init_test.c
+    dv_queue_001_test.c
 )
 
 # --- Global defines (dla kompilatora) ---
@@ -57,7 +58,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ..)
 
 # --- Apply global defines ---
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${GLOBAL_DEFINES})
-# target_compile_definitions(queue_lib PRIVATE ${GLOBAL_DEFINES})
+target_compile_definitions(queue_lib PRIVATE ${GLOBAL_DEFINES})
 
 # --- Compiler flags ---
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -g3 -fshort-enums")
