@@ -15,7 +15,7 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 
 <b><a href='https://niwciu.github.io/QUEUE_LIB/reports/gcovr.html'>Library GCOVR Report</a></b>  
 <b><a href='https://niwciu.github.io/QUEUE_LIB/reports/code_complexity_report.html'>Library Code Complexity Report</a></b>  <br><br>
-<!-- <b><a href='https://niwciu.github.io/QUEUE_LIB/doc/LCD_HD44780_lib_doc/html/index.html'>Code Documentation </a></b>   -->
+<b><a href='https://niwciu.github.io/QUEUE_LIB/doxygen/queue_lib_doc/html/index.html'>Doxygen Code Documentation </a></b>  
 
 ---
 
@@ -36,28 +36,33 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 /queue_lib/
 │
 ├── .github/
-|   └── workflows
-|       ├── CI_Pipeline.yml         # CI action
-|       └── Page_deploy.yml         # Library web page deploy action
-├── doc/                            # doc folder
+│   └── workflows
+│       ├── CI_Pipeline.yml         # CI workflow
+│       └── mkdocs-deploy.yml       # Library web page deploy workflow
+│
+├── docs/                           # Files required for deploy library webpage and documentation
 ├── examples/                       # Ready to run examples
-|   ├── 1_basic_integer_queue      
-|   └── 2_log_queue                 
-├── src/       
-|   ├── queue.c                     # Implementation (MISRA-C compliant)
-|   └── queue.h                     # Public API header
-└── test/ 
-    ├── _config_scripts/        
-    |   ├── CI/  
-    |   |   └── CI.py               # Python scripit runnig specifyed target in config.yaml
-    |   |   └── config.yaml         # CI config file for setup and customize CI workflow            
-    |   └── venv_setup/
-    |       └── requirements.txt    # Python tools required by scripts in project
-    |       └── venv_setup.py       # Script for automated creating of virtual environment and install requirements
-    ├── queue/                      # Queue lib Unit Tests (Unity)
-    ├── template/                   # Unit Tests module template files
-    └── unity/                      # Unit Tests framework files
-
+│   ├── 1_basic_integer_queue      
+│   └── 2_log_queue                 
+├── lib/
+│   └── queue/    
+│       ├── queue.c                 # Implementation (MISRA-C compliant)
+│       └── queue.h                 # Public API header
+├── test/ 
+│   ├── _config_scripts/        
+│   │   ├── CI/  
+│   │   │   └── CI.py               # Python scripit runnig specifyed target in config.yaml
+│   │   │   └── config.yaml         # CI config file for setup and customize CI workflow            
+│   │   └── venv_setup/
+│   │       └── requirements.txt    # Python tools required by scripts in project
+│   │       └── venv_setup.py       # Script for automated creating of virtual environment and install requirements
+│   ├── queue/                      # Queue lib Unit Tests (Unity)
+│   ├── template/                   # Unit Tests module template files
+│   └── unity/                      # Unit Tests framework files
+├── .clang-format                   # clang-foramt rules
+├── LICENSE                             
+├── mkdocs.yml                      # MkDocs deploy settings 
+└── README.md
     
 ```
 
@@ -312,11 +317,11 @@ Licensed under the MIT License (see `LICENSE` file for details).
 
 © 2025 [niwciu](mailto:niwciu@gmail.com)
 
+---
+
 <br>
-<div align="center">
+<p style="text-align: center;">
+  <img src="https://github.com/user-attachments/assets/f4825882-e285-4e02-a75c-68fc86ff5716" alt="myEmbeddedWayBanner">
+</p>
 
-***
-
-![myEmbeddedWayBanerWhiteSmaller](https://github.com/user-attachments/assets/f4825882-e285-4e02-a75c-68fc86ff5716)
-***
-</div>
+---
