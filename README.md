@@ -1,10 +1,11 @@
 ![queue_header](https://github.com/user-attachments/assets/98cc5fb6-66e3-4740-ac1f-e153519fd6dc)
 
 # 🧩 Queue Library (MISRA-C Compliant FIFO)
-A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIFO queue implementation written in pure C — designed for **embedded** and **safety-critical** applications (ISO 26262 / IEC 61508 / DO-178C).
+A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIFO queue with a *documented controlled deviation* (DV-QUEUE-001, Rule 11.4) — designed for **embedded** and **safety-critical** applications (ISO 26262 / IEC 61508 / DO-178C).
 
 ---
-![GitHub License](https://img.shields.io/github/license/niwciu/QUEUE_LIB) 
+
+![GitHub License](https://img.shields.io/github/license/niwciu/QUEUE_LIB)
 ![GitHub top language](https://img.shields.io/github/languages/top/niwciu/QUEUE_LIB)
 ![GitHub Release](https://img.shields.io/github/v/release/niwciu/QUEUE_LIB)
 ![GitHub branch check runs](https://img.shields.io/github/check-runs/niwciu/QUEUE_LIB/main)
@@ -21,12 +22,13 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 
 ## 🚀 Features
 
-- ✅ Written in **C99**, fully **MISRA-C:2012** compliant  
-- ✅ **No dynamic memory allocation** (uses static buffers)  
-- ✅ **Deterministic execution time** (O(n) per element)  
-- ✅ **Type-agnostic** – works with any struct or primitive type  
-- ✅ Compatible with **bare-metal**, **RTOS**, and **safety-critical systems** (*under certain conditions*)  
-- ✅ Unit tests ready (Unity framework)  
+* ✅ Written in **C99**, **MISRA-C:2012 compliant** (*1 controlled deviation – DV-QUEUE-001, Rule 11.4, see docs/compliance/MISRA_Deviations.md*)
+* ✅ **No dynamic memory allocation** (static buffers only)
+* ✅ **Deterministic execution time** (O(element_size) per operation)
+* ✅ **Type-agnostic** – works with any struct or primitive type
+* ✅ Compatible with **bare-metal**, **RTOS**, and **safety-critical systems**
+* ✅ Unit tests ready (**Unity** framework) with branch and statement coverage for all queue operations including DV-QUEUE-001 edge cases
+* ✅ Controlled MISRA deviation fully documented and verified
 
 ---
 
@@ -48,7 +50,7 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 │   └── queue/    
 │       ├── queue.c                 # Implementation (MISRA-C compliant)
 │       └── queue.h                 # Public API header
-├── test/ 
+├── test/
 │   ├── _config_scripts/        
 │   │   ├── CI/  
 │   │   │   └── CI.py               # Python scripit runnig specifyed target in config.yaml
@@ -61,9 +63,8 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 │   └── unity/                      # Unit Tests framework files
 ├── .clang-format                   # clang-foramt rules
 ├── LICENSE                             
-├── mkdocs.yml                      # MkDocs deploy settings 
+├── mkdocs.yml                      # MkDocs deploy settings
 └── README.md
-    
 ```
 
 ---
@@ -71,58 +72,73 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 ## ⚙️ API Reference
 
 ### `queue_init`
+
 ```c
 queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity);
 ```
+
 Initializes a queue instance.
 
-| Parameter | Description |
-|------------|-------------|
-| `q` | Pointer to queue control structure |
-| `buffer` | Pointer to user-provided buffer |
-| `element_size` | Size of a single element (in bytes) |
-| `capacity` | Maximum number of elements in the queue |
+| Parameter      | Description                             |
+| -------------- | --------------------------------------- |
+| `q`            | Pointer to queue control structure      |
+| `buffer`       | Pointer to user-provided buffer         |
+| `element_size` | Size of a single element (bytes)        |
+| `capacity`     | Maximum number of elements in the queue |
 
-Returns one of:
-- `QUEUE_OK` – successfully initialized 
-- `QUEUE_ERROR` – Invalid parameters –> initialization aborted 
+Returns:
+
+* `QUEUE_OK` – successfully initialized
+* `QUEUE_ERROR` – invalid parameters
 
 ---
 
 ### `queue_push`
+
 ```c
 queue_status_t queue_push(queue_t *q, const void *item);
 ```
-Adds an element to the queue (tail).  
-Returns one of:
-- `QUEUE_OK` – successfully added  
-- `QUEUE_FULL` – queue is full  
-- `QUEUE_ERROR` – invalid parameters  
+
+Adds an element to the queue (tail).
+
+Returns:
+
+* `QUEUE_OK` – successfully added
+* `QUEUE_FULL` – queue is full
+* `QUEUE_ERROR` – invalid parameters
 
 ---
 
 ### `queue_pop`
+
 ```c
 queue_status_t queue_pop(queue_t *q, void *item);
 ```
-Removes the oldest element from the queue (head).  
-Returns one of:
-- `QUEUE_OK` – element successfully read  
-- `QUEUE_EMPTY` – queue is empty  
-- `QUEUE_ERROR` – invalid parameters  
+
+Removes the oldest element from the queue (head).
+
+Returns:
+
+* `QUEUE_OK` – element successfully read
+* `QUEUE_EMPTY` – queue is empty
+* `QUEUE_ERROR` – invalid parameters
 
 ---
 
 ### `queue_is_empty`
+
 ```c
 bool queue_is_empty(const queue_t *q);
 ```
+
 Returns `true` if the queue contains no elements.
 
 ### `queue_is_full`
+
 ```c
 bool queue_is_full(const queue_t *q);
 ```
+
 Returns `true` if the queue has reached its capacity.
 
 ---
@@ -221,6 +237,7 @@ int main(void)
 ```
 
 **Example Output:**
+
 ```
 LOG: System initialized
 LOG: Temperature sensor ready
@@ -228,11 +245,15 @@ LOG: Main loop started
 ```
 
 ---
+
 ## ▶️ Running examples:
+
 ### 🚀 1_basic_integer_queue
-1. Go to project main folder. 
+
+1. Go to project main folder.
 2. Open examples folder, compile and run the example
-``` bash
+
+```bash
 cd examples/1_basic_integer_queue
 cmake -S./ -B out -G"Unix Makefiles"
 cd out
@@ -240,9 +261,11 @@ make run
 ```
 
 ### 🚀 2_log_queue
-1. Go to project main folder. 
+
+1. Go to project main folder.
 2. Open examples folder, compile and run the example
-``` bash
+
+```bash
 cd examples/2_log_queue
 cmake -S./ -B out -G"Unix Makefiles"
 cd out
@@ -263,10 +286,16 @@ You can compile it as part of your embedded firmware or as a portable C module.
 
 ## 🧪 Unit Tests (Unity)
 
-Running Unit tests:
-1. Go to project main folder. 
-2. Open test folder, compile and run the tests
-``` bash
+All unit tests include coverage for the DV-QUEUE-001 deviation:
+
+* Push/pop of different data types (int, struct, char array)
+* Wrap-around behavior
+* Edge cases (zero-byte elements, NULL pointers)
+* Branch coverage in `copy_bytes`
+
+Run tests:
+
+```bash
 cd test/queue
 cmake -S./ -B out -G"Unix Makefiles"
 cd out
@@ -277,43 +306,36 @@ make run
 
 ## 🧰 Safety / Compliance Notes
 
-- **No dynamic memory** → static allocation only  
-- **No memcpy/memmove** → deterministic byte-copy routine  
-- **MISRA-C:2012 ready** – safe for safety-critical projects  
-- **Portable** – works on any MCU / compiler (GCC, IAR, GHS, etc.)  
-- Time complexity: `O(element_size)` per operation (deterministic)
+* **No dynamic memory** → static allocation only
+* **No memcpy/memmove** → deterministic byte-copy routine (`copy_bytes`)
+* **MISRA-C:2012 ready** – controlled deviation DV-QUEUE-001 fully documented and verified
+* **Thread safety** – not inherently thread-safe; protect operations in RTOS/ISR environments
+* Deterministic timing: O(element_size) per operation
+* Compliance verification: static analysis, unit/integration tests, code review
+
+**DV-QUEUE-001:**
+
+* Rule 11.4 – cast between `void*` and `uint8_t*`
+* Justification: controlled, local casts for byte-level operations
+* Verified: unit tests covering all branches of `copy_bytes`, multiple data types
 
 ---
 
 ## ⚠️ Safety-Critical Additional Requirements
 
-This library is **suitable** for use in safety-critical applications  
-(e.g., ISO 26262, IEC 61508, DO-178C) **under the following conditions**:
+Follow these for ISO 26262 / IEC 61508 compliance:
 
-1. **Code Verification and Analysis**
-   - Perform static code analysis (e.g., PC-Lint, Coverity, Cppcheck).
-   - Conduct peer code reviews according to project quality standards.
-   - Verify full statement and branch coverage through unit/integration testing.
-
-2. **Thread Safety and Concurrency**
-   - The library itself is **not thread-safe**.
-   - When used in RTOS environments:
-     - Protect queue operations (`queue_push`, `queue_pop`) with mutexes or critical sections.
-     - Avoid simultaneous access from ISR and task context without synchronization.
-
-3. **Deterministic Timing**
-   - All operations are deterministic (O(element_size)).  
-   - Ensure consistent execution time under all conditions.
-
-4. **Version Control and Traceability**
-   - Maintain version tracking and traceability documentation.
-   - Validate integration through system-level verification steps.
+1. Static code analysis
+2. Full unit/integration testing with coverage report
+3. Peer code reviews
+4. Thread safety in multi-context environments
+5. Traceable version control and documentation
 
 ---
 
 ## 📜 License
 
-Licensed under the MIT License (see `LICENSE` file for details).
+Licensed under the MIT License (see `LICENSE` file).
 
 © 2025 [niwciu](mailto:niwciu@gmail.com)
 
@@ -323,5 +345,3 @@ Licensed under the MIT License (see `LICENSE` file for details).
 <p style="text-align: center;">
   <img src="https://github.com/user-attachments/assets/f4825882-e285-4e02-a75c-68fc86ff5716" alt="myEmbeddedWayBanner">
 </p>
-
----

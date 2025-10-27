@@ -1,143 +1,173 @@
-# PROJECT CUSTOM TARGETS FILE
-#  here you can define custom targets for the project so all team member can use it in the same way
-#  some example of custo targets are shown bello those are targets for:
-# 		1. Running unit tests
-# 		2. Code Complexity Metrics
-# 		3. CppCheck static analize of specific folder
-# 		4. Code Coverage report generation.
+######################################################################
+# PROJECT CUSTOM TARGETS
+# Predefined targets for all team members
+# Includes: unit tests, code complexity, static analysis, coverage, formatting
+######################################################################
 
+# -------------------------
+# Unit Tests Target
+# -------------------------
+message(STATUS "To run Unit Tests, use target: run")
+add_custom_target(run
+    COMMAND QUEUE_test
+    COMMENT "Running all unit tests"
+)
 
-#TARGETS FOR RUNNING UNIT TESTS
-message(STATUS "To run Unit Tests, you can use predefine target: \r\n\trun,")
-add_custom_target(run QUEUE_test)
-
-# TARGET FOR CHECKING CODE COMPLEXITY METRICS"
-# check if lizard software is available 
-find_program(lizard_program lizard)
-if(lizard_program)
-	message(STATUS "Lizard was found, you can use predefined targets for src folder Code Complexity Metrics: \r\n\tccm,\r\n\tccmr,")
+# -------------------------
+# Code Complexity Metrics (Lizard)
+# -------------------------
+find_program(LIZARD_PROGRAM lizard)
+if(LIZARD_PROGRAM)
+    message(STATUS "Lizard found. Targets: ccm (console), ccmr (report)")
 else()
-	message(STATUS "Lizard was not found. \r\n\tInstall Lizard to get predefined targets for src folder Code Complexity Metrics")
+    message(STATUS "Lizard not found. Install Lizard to enable Code Complexity Metrics targets.")
 endif()
-# Prints CCM for src folder in the console
-add_custom_target(ccm lizard 
-						../../../lib/queue 
-						--CCN 12 -Tnloc=30 
-						-a 4 
-						--languages cpp 
-						-V 
-						-i 1)
-# Create CCM report in reports/Cylcomatic_Complexity/
-add_custom_command(
-    OUTPUT ../../../reports/CCM/
+
+# Print CCM in console
+add_custom_target(ccm
+    COMMAND ${LIZARD_PROGRAM} ../../../lib/queue
+            --CCN 12 -Tnloc=30
+            -a 4
+            --languages cpp
+            -V
+            -i 1
+    COMMENT "Code Complexity Metrics (CCM) printed to console"
+)
+
+# Generate CCM HTML report
+add_custom_target(ccmr
     COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCM/
-    COMMENT "Tworzenie katalogów raportów Code Coverage"
-)
-add_custom_target(ccmr 
-	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCM/
-	COMMAND lizard 
-				../../../lib/queue 
-				--CCN 12 
-				-Tnloc=30 
-				-a 4 
-				--languages cpp 
-				-V 
-				-o ../../../reports/CCM/queue.html
+    COMMAND ${LIZARD_PROGRAM} ../../../lib/queue
+            --CCN 12
+            -Tnloc=30
+            -a 4
+            --languages cpp
+            -V
+            -o ../../../reports/CCM/queue.html
+    COMMENT "Generating Code Complexity Metrics HTML report"
 )
 
-# TARGET FOR MAKING STATIC ANALYSIS OF THE SOURCE CODE AND UNIT TEST CODE
-# check if cppchec software is available 
-find_program(cppcheck_program cppcheck)
-if(cppcheck_program)
-	message(STATUS "CppCheck was found, you can use predefined targets for static analize : \r\n\tcppcheck,")
+# -------------------------
+# Static Analysis (CppCheck)
+# -------------------------
+find_program(CPPCHECK_PROGRAM cppcheck)
+if(CPPCHECK_PROGRAM)
+    message(STATUS "CppCheck found. Targets: cppcheck, cppcheck_html_report")
 else()
-	message(STATUS "CppCheck was not found. \r\n\tInstall CppCheck to get predefined targets for static analize")
+    message(STATUS "CppCheck not found. Install to enable static analysis targets.")
 endif()
-add_custom_target(cppcheck cppcheck
-					../../../lib/queue
-					../../../test/queue
-					-i../../../test/queue/out
-					--enable=all
-					--force
-					# --inconclusive
-					--std=c99
-					# --inline-suppr 
-					# --platform=win64 
-					--suppress=missingIncludeSystem 
-					--suppress=missingInclude
-					# --suppress=unusedFunction:../../../test/template/template_test_runner.c:3
-					# --checkers-report=cppcheck_checkers_report.txt
-					)
-# TARGET FOR CREATING CODE COVERAGE REPORTS
-# check if python 3 and gcovr are available 
+
+# Directory for cppcheck reports
+set(CPPCHECK_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/cppcheck)
+file(MAKE_DIRECTORY ${CPPCHECK_OUTPUT_DIR})
+
+# Run cppcheck and generate XML
+add_custom_target(cppcheck
+    COMMAND ${CPPCHECK_PROGRAM} 
+			../../../lib/queue 
+			../../../test/queue
+            -i../../../test/queue/out
+            --enable=all
+            --force
+            --inconclusive
+            --std=c99
+            --suppress=missingIncludeSystem
+            --suppress=missingInclude
+			--checkers-report=checkers.xml
+            --xml 2> ${CPPCHECK_OUTPUT_DIR}/cppcheck_report.xml
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Running CppCheck and generating XML report"
+    VERBATIM
+)
+
+# Generate HTML report from cppcheck XML
+add_custom_target(cppcheck_html_report
+    COMMAND cppcheck-htmlreport
+            --file=${CPPCHECK_OUTPUT_DIR}/cppcheck_report.xml
+            --report-dir=${CPPCHECK_OUTPUT_DIR}/html
+            --source-dir=../../../lib/queue
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMENT "Generating CppCheck HTML report"
+    VERBATIM
+)
+add_dependencies(cppcheck_html_report cppcheck)
+
+# -------------------------
+# Code Coverage (gcovr)
+# -------------------------
 find_program(GCOVR gcovr)
 if(GCOVR)
-	message(STATUS "python 3 and gcovr was found, you can use predefined targets for uint tests code coverage report generation : 
-					\r\tccc - Code Coverage Check, 
-					\r\tccr - Code Coverage Reports generation,
-					\r\tccca - Code Coverage Check All -> whole project check, 
-					\r\tccra - Code Coverage Reports All -> whole project raport generation")
+    message(STATUS "gcovr found. Targets: ccc, ccr, ccca, ccra")
 else()
-	message(STATUS "pyton 3 was found but gcovr was not found. \r\n\tInstall gcovr to get predefined targets for uint tests code coverage report generation")
+    message(STATUS "gcovr not found. Install to enable code coverage targets.")
 endif()
+
+# Create report directories
 add_custom_command(
     OUTPUT ../../../reports/CCR/ ../../../reports/CCR/JSON_ALL/
     COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
     COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/
-    COMMENT "Tworzenie katalogów raportów Code Coverage"
-)
-add_custom_target(ccr
-	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
-	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/
-	COMMAND gcovr 
-				-r ../../../lib/queue 
-				--json ../../../reports/CCR/JSON_ALL/coverage_queue.json
-				--json-base  lib/queue
-				--html-details ../../../reports/CCR/queue_report.html
-				--html-theme github.dark-green
-				.
-)
-		
-add_custom_target(ccc gcovr  
-						-r ../../../lib/queue
-						--fail-under-line 90
-						.
+    COMMENT "Creating code coverage report directories"
 )
 
-add_custom_target(ccca gcovr  
-						-r ../../../ 
-						--json-add-tracefile \"../../../reports/CCR/JSON_ALL/coverage_*.json\"  
-						.
+# Unit test coverage HTML + JSON
+add_custom_target(ccr
+    COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
+    COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/
+    COMMAND gcovr -r ../../../lib/queue
+            --json ../../../reports/CCR/JSON_ALL/coverage_queue.json
+            --json-base lib/queue
+            --html-details ../../../reports/CCR/queue_report.html
+            --html-theme github.dark-green
+    COMMENT "Generating code coverage report for queue library"
 )
-						
-add_custom_target(ccra  
-	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
-	COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/
-	COMMAND gcovr 
-				-r ../../../ 
-				--json-add-tracefile \"../../../reports/CCR/JSON_ALL/coverage_*.json\"  
-				--html-details -o ../../../reports/CCR/JSON_ALL/HTML_OUT/project_coverage.html
-				--html-theme github.dark-green
-				.
+
+# Unit test coverage check (fail-under-line)
+add_custom_target(ccc
+    COMMAND gcovr -r ../../../lib/queue --fail-under-line 90 .
+    COMMENT "Checking code coverage (fail under 90%)"
 )
-add_dependencies(ccra ccr)
+
+# Whole project coverage JSON aggregation
+add_custom_target(ccca
+    COMMAND gcovr 
+			-r ../../../ 
+			--json-add-tracefile ../../../reports/CCR/JSON_ALL/coverage_*.json .
+    COMMENT "Aggregating JSON coverage for whole project"
+)
 add_dependencies(ccca ccr)
 
+# Whole project coverage HTML aggregation
+add_custom_target(ccra
+    COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/
+    COMMAND ${CMAKE_COMMAND} -E make_directory ../../../reports/CCR/JSON_ALL/HTML_OUT
+    COMMAND gcovr 
+			-r ../../../ 
+			--json-add-tracefile ../../../reports/CCR/JSON_ALL/coverage_*.json
+            --html-details -o ../../../reports/CCR/JSON_ALL/HTML_OUT/project_coverage.html
+            --html-theme github.dark-green
+    COMMENT "Aggregating HTML coverage for whole project"
+)
+add_dependencies(ccra ccr)
+
+# -------------------------
+# Code Formatting (clang-format)
+# -------------------------
 find_program(CLANG_FORMAT clang-format)
 if(CLANG_FORMAT)
-	message(STATUS "clang-format was found, you can use predefined target for formating the code in project predefined standard : \r\n\tformat \r\n\tformat_test")
+    message(STATUS "clang-format found. Targets: format, format_test")
 else()
-	message(STATUS "clang-format was not found. \r\n\tInstall clang-format to get predefined target for formating the code in project predefined standard")
+    message(STATUS "clang-format not found. Install to enable code formatting targets.")
 endif()
-add_custom_target(format  clang-format 
-							-i 
-							-style=file 
-							../../../lib/queue/*.c 
-							../../../lib/queue/*.h
+
+# Format library sources
+add_custom_target(format
+    COMMAND clang-format -i -style=file ../../../lib/queue/*.c ../../../lib/queue/*.h
+    COMMENT "Formatting library source code"
 )
-add_custom_target(format_test  clang-format 
-								-i 
-								-style=file 
-								../*.c 
-								# ../*.h
+
+# Format test sources
+add_custom_target(format_test
+    COMMAND clang-format -i -style=file ../*.c
+    COMMENT "Formatting test source code"
 )
