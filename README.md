@@ -12,13 +12,27 @@ A **deterministic**, **zero-dynamic-memory**, and **MISRA-C:2012 compliant** FIF
 ![CI Pipeline](https://github.com/niwciu/QUEUE_LIB/actions/workflows/CI_Pipeline.yml/badge.svg)
 ![MISRA](https://img.shields.io/badge/MISRA-C%3A2012-blue)
 
-<!-- <img src='https://coveralls.io/repos/github/niwciu/LCD_HD44780/badge.svg?branch=feature/code_coverage_page_deploy' alt='Coverage Status' /></a> -->
+---
 
-<b><a href='https://niwciu.github.io/QUEUE_LIB/reports/gcovr.html'>Library GCOVR Report</a></b>  
-<b><a href='https://niwciu.github.io/QUEUE_LIB/reports/code_complexity_report.html'>Library Code Complexity Report</a></b>  <br><br>
-<b><a href='https://niwciu.github.io/QUEUE_LIB/doxygen/queue_lib_doc/html/index.html'>Doxygen Code Documentation </a></b>  
+## 🧩 Compliance Verification
+
+The **QUEUE_LIB** project includes a complete, auditable verification chain ensuring traceable MISRA-C:2012 compliance, documentation quality, and code integrity.
+
+| Verification Area | Tool / Method | Evidence / Report |
+|--------------------|---------------|-------------------|
+| **Static Analysis** | `cppcheck` (open-source) + `gcc -Wall -Wextra -pedantic` | Verified code safety and type correctness |
+| **Formatting Rules** | `clang-format` | Ensures consistent style and readability (MISRA §2.1) |
+| **Cyclomatic Complexity** | `lizard` | [Code Complexity Report](https://niwciu.github.io/QUEUE_LIB/reports/code_complexity_report.html) |
+| **Code Coverage** | `gcov` + `gcovr` | [Coverage Report](https://niwciu.github.io/QUEUE_LIB/reports/gcovr.html) |
+| **Documentation** | `doxygen` | [Generated API Documentation](https://niwciu.github.io/QUEUE_LIB/doxygen/queue_lib_doc/html/index.html) |
+| **MISRA Deviation Record** | Manual documentation | [DV-QUEUE-001 (Rule 11.4)](https://niwciu.github.io/QUEUE_LIB/compliance/MISRA_Deviations) |
+| **Unit Tests** | *Unity* Framework | Run locally and in CI (GitHub Actions) |
+| **Continuous Integration** | GitHub Actions | Builds, tests, and publishes reports automatically |
+
+All verification artifacts are automatically generated and published to GitHub Pages as part of the CI pipeline.
 
 ---
+
 
 ## 🚀 Features
 
