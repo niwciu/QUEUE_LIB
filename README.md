@@ -29,12 +29,16 @@ The **QUEUE_LIB** project includes a complete, auditable verification chain ensu
 | **Unit Tests** | *Unity* Framework | Run locally and in CI (GitHub Actions) |
 | **Continuous Integration** | GitHub Actions | Builds, tests, and publishes reports automatically |
 
-All verification artifacts are automatically generated and published to GitHub Pages as part of the CI pipeline.
+> 🌐 **All reports and generated documentation are available online**  
+> and deployed automatically using *GitHub Actions*  
+> 🔗 [niwciu.github.io/QUEUE_LIB](https://niwciu.github.io/QUEUE_LIB)
+
+
 
 ---
 
 
-## 🚀 Features
+## 🚀 Key Features
 
 * ✅ Written in **C99**, **MISRA-C:2012 compliant** (*1 controlled deviation – DV-QUEUE-001, Rule 11.4, see docs/compliance/MISRA_Deviations.md*)
 * ✅ **No dynamic memory allocation** (static buffers only)
@@ -46,7 +50,7 @@ All verification artifacts are automatically generated and published to GitHub P
 
 ---
 
-## 📁 File structure
+## 📁 File Structure
 
 ```
 /queue_lib/
@@ -67,15 +71,15 @@ All verification artifacts are automatically generated and published to GitHub P
 ├── test/
 │   ├── _config_scripts/        
 │   │   ├── CI/  
-│   │   │   └── CI.py               # Python scripit runnig specifyed target in config.yaml
-│   │   │   └── config.yaml         # CI config file for setup and customize CI workflow            
+│   │   │   └── CI.py               # Python script running configured targets
+│   │   │   └── config.yaml         # Customizable CI workflow setup            
 │   │   └── venv_setup/
 │   │       └── requirements.txt    # Python tools required by scripts in project
 │   │       └── venv_setup.py       # Script for automated creating of virtual environment and install requirements
 │   ├── queue/                      # Queue lib Unit Tests (Unity)
 │   ├── template/                   # Unit Tests module template files
 │   └── unity/                      # Unit Tests framework files
-├── .clang-format                   # clang-foramt rules
+├── .clang-format                   # clang-format rules
 ├── LICENSE                             
 ├── mkdocs.yml                      # MkDocs deploy settings
 └── README.md
@@ -250,7 +254,7 @@ int main(void)
 }
 ```
 
-**Example Output:**
+**💬 Example Output:**
 
 ```
 LOG: System initialized
@@ -355,7 +359,17 @@ Licensed under the MIT License (see `LICENSE` file).
 
 ---
 
+👉 Explore full documentation online:  
+[https://niwciu.github.io/QUEUE_LIB](https://niwciu.github.io/QUEUE_LIB)
+
+---
+
 <br>
 <p style="text-align: center;">
   <img src="https://github.com/user-attachments/assets/f4825882-e285-4e02-a75c-68fc86ff5716" alt="myEmbeddedWayBanner">
+  <p align="center">
+  <i>Part of the <b>myEmbeddedWay</b> safety-oriented C library collection.</i>
 </p>
+</p>
+
+
