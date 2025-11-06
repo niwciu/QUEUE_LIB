@@ -4,25 +4,32 @@
  *      niwciu (niwciu@gmail.com)
  * @brief
  *      Deterministic, generic FIFO queue for embedded / safety-critical systems.
- * @version 1.0.2
- * @date 2025-10-26
+ * @version 1.0.3
+ * @date 2025-11-06
  *
  * @details
- *  Queue interface designed to be MISRA-C:2012 aware and suitable for
- *  safety-critical applications (ISO 26262). Implementation uses a user-supplied
- *  raw data buffer (void *) to support multiple element types.
+ *  This module implements a type-agnostic, deterministic FIFO queue designed
+ *  for embedded and safety-critical environments (IEC 61508 / ISO 26262).
+ *
+ *  The implementation:
+ *  - avoids dynamic memory allocation,
+ *  - guarantees bounded and predictable execution time,
+ *  - validates all input parameters,
+ *  - contains no recursion or standard library dependencies,
+ *  - is fully reentrant (no static/global state).
  *
  *  MISRA Deviation: DV-QUEUE-001 (Rule 11.4)
- *  Justified cast from void* to uint8_t* for byte-level memory operations.
+ *  Controlled cast from `void*` to `uint8_t*` for raw byte-level copy operations.
+ *  Safe and justified — no aliasing or type reinterpretation occurs.
  *
  * @note
- *  Caller is responsible for ensuring the provided buffer size is at least:
- *  (element_size * capacity) bytes, properly aligned for the element type.
+ *  The caller is responsible for providing a buffer of at least
+ *  (element_size × capacity) bytes, properly aligned for the stored element type.
  *
  * @note
- *  Internal helper function `copy_bytes(uint8_t*, const uint8_t*, uint16_t)`
- *  is exercised indirectly via unit tests in group DV_QUEUE_001 to cover all branches,
- *  including NULL pointer cases and edge conditions.
+ *  The internal helper `copy_bytes(uint8_t*, const uint8_t*, uint16_t)` is tested
+ *  indirectly via unit tests in the DV_QUEUE_001 suite, covering NULL pointers
+ *  and boundary conditions.
  */
 
 #ifndef QUEUE_H
@@ -35,80 +42,115 @@ extern "C"
 
 #include <stdint.h>
 #include <stdbool.h>
+    /**
+     * @defgroup queue Queue Module
+     * @brief Deterministic FIFO queue for safety-critical embedded systems.
+     *
+     * This module provides a generic, deterministic, and type-agnostic FIFO queue
+     * implementation suitable for use in MISRA-C and ISO 26262 compliant projects.
+     *
+     * @see @ref MISRA_Compliance
+     *
+     * @{
+     */
 
     /**
+     * @ingroup queue
      * @brief Queue operation status codes.
      */
     typedef enum
     {
         QUEUE_OK = 0U,    /**< Operation completed successfully. */
-        QUEUE_FULL = 1U,  /**< Queue is full; push operation failed. */
-        QUEUE_EMPTY = 2U, /**< Queue is empty; pop operation failed. */
-        QUEUE_ERROR = 3U  /**< General error (invalid parameters, etc.). */
+        QUEUE_FULL = 1U,  /**< Queue full — push failed. */
+        QUEUE_EMPTY = 2U, /**< Queue empty — pop failed. */
+        QUEUE_ERROR = 3U  /**< General error — invalid parameters. */
     } queue_status_t;
 
     /**
+     * @ingroup queue
      * @brief FIFO queue control structure.
      *
      * @details
-     *   The buffer pointer is a generic void* to enable use with different element types.
-     *   All access operations are byte-based, and no type reinterpretation occurs.
+     *  Holds internal queue bookkeeping data.
+     *  The `buffer` is a generic `void*` enabling use with arbitrary element types.
      *
      * @note
-     *   MISRA Deviation DV-QUEUE-001 applies to controlled casts from void*.
+     *  MISRA deviation DV-QUEUE-001 applies to controlled pointer casts
+     *  from `void*` to `uint8_t*` for deterministic byte-wise copying.
      */
     typedef struct
     {
-        void *buffer;          /**< Pointer to user-provided data buffer. */
-        uint16_t element_size; /**< Size in bytes of one element. */
-        uint16_t capacity;     /**< Maximum number of elements. */
-        uint16_t head;         /**< Read index. */
-        uint16_t tail;         /**< Write index. */
-        uint16_t count;        /**< Current number of stored elements. */
+        void *buffer;                 /**< Pointer to user-provided data buffer. */
+        uint16_t buffer_element_size; /**< Element size in bytes (> 0). */
+        uint16_t capacity;            /**< Maximum number of elements (> 0). */
+        uint16_t head;                /**< Read index. */
+        uint16_t tail;                /**< Write index. */
+        uint16_t count;               /**< Current number of stored elements. */
     } queue_t;
 
     /**
-     * @brief Initialize a queue.
+     * @ingroup queue
+     * @brief Initialize a queue instance.
+     *
      * @param[in,out] q            Pointer to queue control structure.
-     * @param[in]     buffer       Pointer to storage buffer.
-     * @param[in]     element_size Element size in bytes (>0).
-     * @param[in]     capacity     Number of elements (>0).
-     * @retval QUEUE_OK    Successful initialization.
-     * @retval QUEUE_ERROR Invalid parameters.
+     * @param[in]     buffer       Pointer to caller-supplied storage buffer.
+     * @param[in]     buffer_element_size Element size in bytes (must > 0).
+     * @param[in]     queue_capacity Number of elements in queue (must > 0).
+     *
+     * @retval QUEUE_OK    Initialization succeeded.
+     * @retval QUEUE_ERROR Invalid arguments (NULL or 0).
+     *
+     * @note Deterministic and reentrant.
      */
-    queue_status_t queue_init(queue_t *q, void *buffer, uint16_t element_size, uint16_t capacity);
+    queue_status_t queue_init(queue_t *q, void *buffer, uint16_t buffer_element_size, uint16_t queue_capacity);
 
     /**
-     * @brief Push an element into the queue.
+     * @ingroup queue
+     * @brief Push (enqueue) one element into the queue.
+     *
      * @param[in,out] q    Pointer to queue instance.
-     * @param[in]     item Pointer to data to add (element_size bytes).
+     * @param[in]     item Pointer to element data to add.
+     *
      * @retval QUEUE_OK    Success.
-     * @retval QUEUE_FULL  Queue full.
+     * @retval QUEUE_FULL  Queue already full.
      * @retval QUEUE_ERROR Invalid parameters.
+     *
+     * @note Deterministic; no blocking.
      */
     queue_status_t queue_push(queue_t *q, const void *item);
 
     /**
-     * @brief Pop an element from the queue.
+     * @ingroup queue
+     * @brief Pop (dequeue) one element from the queue.
+     *
      * @param[in,out] q    Pointer to queue instance.
-     * @param[out]    item Pointer to destination buffer.
+     * @param[out]    item Pointer to destination buffer to store element.
+     *
      * @retval QUEUE_OK    Success.
-     * @retval QUEUE_EMPTY Queue empty.
+     * @retval QUEUE_EMPTY Queue empty — no element available (item unchanged).
      * @retval QUEUE_ERROR Invalid parameters.
+     *
+     * @note Deterministic; no blocking.
      */
     queue_status_t queue_pop(queue_t *q, void *item);
 
     /**
-     * @brief Check whether queue is empty.
+     * @ingroup queue
+     * @brief Check if queue is empty.
+     *
      * @param[in] q Pointer to queue instance.
-     * @return true if empty, false otherwise.
+     * @return true  — queue empty or q is NULL.
+     * @return false — otherwise.
      */
     bool queue_is_empty(const queue_t *q);
 
     /**
-     * @brief Check whether queue is full.
+     * @ingroup queue
+     * @brief Check if queue is full.
+     *
      * @param[in] q Pointer to queue instance.
-     * @return true if full, false otherwise.
+     * @return true  — queue full.
+     * @return false — otherwise (including q is NULL).
      */
     bool queue_is_full(const queue_t *q);
 
@@ -134,6 +176,7 @@ extern "C"
      * - Unit tests (DV_QUEUE_001): cover int, struct, char array, wrap-around, zero-byte elements, NULL pointer handling
      * - Code review: APPROVED by Software Safety Architect
      */
+    /** @} */ /* end of queue group */
 
 #ifdef __cplusplus
 }
