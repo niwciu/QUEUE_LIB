@@ -13,7 +13,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### 🧩 Added
 
 * **Queue peek API:** `queue_peek()` to inspect the first element without removing it.
-* **Expanded unit tests:** separated tests into groups (`queue_init`, `queue_push`, `queue_pop`, `queue_peek`, `queue_state`, `queue_integration`, `DV_QUEUE_001`).
+* **Expanded unit tests:** separated tests into groups (`queue_init`, `queue_push`, `queue_pop`, `queue_peek`, `queue_state`, `queue_core`, `DV_QUEUE_001`).
 * **Additional edge-case and MISRA coverage tests:** wrap-around, multiple struct types, float alignment, zero-byte element, null-pointer handling.
 * **Enhanced DV_QUEUE_001 test suite** to fully verify MISRA Deviation DV-QUEUE-001.
 
