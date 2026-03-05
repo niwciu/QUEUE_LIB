@@ -5,6 +5,7 @@ Build/
 reports/
 
 ToDo.txt
+self-hosted.txt
 
 .venv/
 __pycache__/
