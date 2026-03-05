@@ -37,8 +37,12 @@ include(${CUSTOM_TARGETS_FILE_DIR})
 set(TEST_SRCS
     queue_test_main.c
     queue_test_runner.c
-    queue_test.c
     queue_init_test.c
+    queue_push_test.c
+    queue_pop_test.c
+    queue_peek_test.c
+    queue_state_test.c
+    queue_core_test.c
     dv_queue_001_test.c
 )
 

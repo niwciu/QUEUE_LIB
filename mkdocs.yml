@@ -67,6 +67,7 @@ nav:
   - Reports: reports.md
   - Doxygen docu: doxygen/queue_lib_doc/html/index.html
   - MISRA Deviations: compliance/MISRA_Deviations.md
+  - Changelog: CHANGELOG.md
 
 extra:
   social:
