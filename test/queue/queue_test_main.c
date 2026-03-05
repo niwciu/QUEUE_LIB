@@ -12,6 +12,10 @@ int main(int argc, const char **argv)
 static void run_all_tests(void)
 {
     RUN_TEST_GROUP(queue_init);
-    RUN_TEST_GROUP(queue);
+    RUN_TEST_GROUP(queue_push);
+    RUN_TEST_GROUP(queue_pop);
+    RUN_TEST_GROUP(queue_peek);
+    RUN_TEST_GROUP(queue_state);
+    RUN_TEST_GROUP(queue_core);
     RUN_TEST_GROUP(DV_QUEUE_001);
 }

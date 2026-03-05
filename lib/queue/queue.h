@@ -4,8 +4,8 @@
  *      niwciu (niwciu@gmail.com)
  * @brief
  *      Deterministic, generic FIFO queue for embedded / safety-critical systems.
- * @version 1.0.3
- * @date 2025-11-06
+ * @version 1.0.4
+ * @date 2026-03-05
  *
  * @details
  *  This module implements a type-agnostic, deterministic FIFO queue designed
@@ -133,6 +133,21 @@ extern "C"
      * @note Deterministic; no blocking.
      */
     queue_status_t queue_pop(queue_t *q, void *item);
+
+    /**
+     * @ingroup queue
+     * @brief Peek at the first element in the queue without removing it.
+     *
+     * @param[in]  q    Pointer to queue instance.
+     * @param[out] item Pointer to destination buffer to store the element.
+     *
+     * @retval QUEUE_OK    Success, first element copied to `item`.
+     * @retval QUEUE_EMPTY Queue is empty — no element available (item unchanged).
+     * @retval QUEUE_ERROR Invalid parameters (NULL pointers, etc.).
+     *
+     * @note Deterministic; does not modify queue state (head, tail, count remain unchanged).
+     */
+    queue_status_t queue_peek(const queue_t *q, void *item);
 
     /**
      * @ingroup queue

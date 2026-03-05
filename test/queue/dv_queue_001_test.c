@@ -179,3 +179,80 @@ TEST(DV_QUEUE_001, CopyBytesNullPointers)
     copy_bytes(buf, NULL, 4);
     copy_bytes(NULL, NULL, 4);
 }
+
+/* -------------------------- */
+/* Additional MISRA corner-case and reentrancy tests */
+/* -------------------------- */
+/* Test with element type requiring stricter alignment (float) */
+TEST(DV_QUEUE_001, PushPopFloatMaintainsAlignment)
+{
+    /* Input array of floats */
+    float in[DV_QUEUE_CAPACITY] = {1.1f, 2.2f, 3.3f};
+    float out = 0.0f;
+    float buffer[DV_QUEUE_CAPACITY];
+    queue_t f_queue;
+
+    /* Initialize queue with float buffer */
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_init(&f_queue, buffer, sizeof(float), DV_QUEUE_CAPACITY));
+
+    /* Push all elements */
+    for (int i = 0; i < DV_QUEUE_CAPACITY; i++)
+    {
+        TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&f_queue, &in[i]));
+    }
+
+    /* Pop all elements and verify values */
+    for (int i = 0; i < DV_QUEUE_CAPACITY; i++)
+    {
+        TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&f_queue, &out));
+        TEST_ASSERT_FLOAT_WITHIN(0.0001f, in[i], out); /* Use a tolerance for float comparison */
+    }
+}
+
+// Test reentrancy: push/pop on two independent queues
+TEST(DV_QUEUE_001, MultipleQueuesOperateIndependently)
+{
+    int buf1[DV_QUEUE_CAPACITY], buf2[DV_QUEUE_CAPACITY];
+    queue_t q1, q2;
+
+    queue_init(&q1, buf1, sizeof(int), DV_QUEUE_CAPACITY);
+    queue_init(&q2, buf2, sizeof(int), DV_QUEUE_CAPACITY);
+
+    int val1 = 10, val2 = 20, out1 = 0, out2 = 0;
+
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q1, &val1));
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&q2, &val2));
+
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&q1, &out1));
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&q2, &out2));
+
+    TEST_ASSERT_EQUAL_INT(val1, out1);
+    TEST_ASSERT_EQUAL_INT(val2, out2);
+}
+
+// Test push/pop at buffer boundaries to check head/tail wrap-around
+TEST(DV_QUEUE_001, PushPopBoundaryWrapAround)
+{
+    int values[DV_QUEUE_CAPACITY + 1] = {1, 2, 3, 4};
+    int out = 0;
+
+    // Fill queue
+    for (int i = 0; i < DV_QUEUE_CAPACITY; i++)
+        TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&dv_queue, &values[i]));
+
+    // Pop all to empty
+    for (int i = 0; i < DV_QUEUE_CAPACITY; i++)
+    {
+        TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&dv_queue, &out));
+        TEST_ASSERT_EQUAL_INT(values[i], out);
+    }
+
+    TEST_ASSERT_TRUE(queue_is_empty(&dv_queue));
+
+    // Push one more element after emptying
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_push(&dv_queue, &values[DV_QUEUE_CAPACITY]));
+    TEST_ASSERT_FALSE(queue_is_empty(&dv_queue));
+    TEST_ASSERT_EQUAL(QUEUE_OK, queue_pop(&dv_queue, &out));
+    TEST_ASSERT_EQUAL_INT(values[DV_QUEUE_CAPACITY], out);
+    TEST_ASSERT_TRUE(queue_is_empty(&dv_queue));
+}

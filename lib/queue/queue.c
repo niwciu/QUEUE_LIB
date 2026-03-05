@@ -1,8 +1,8 @@
 /**
  * @file queue.c
  * @brief Generic FIFO queue implementation for embedded safety-critical use.
- * @version 1.0.3
- * @date 2025-11-06
+ * @version 1.0.4
+ * @date 2026-03-05
  *
  * @details
  *  Provides deterministic enqueue/dequeue operations on a caller-supplied
@@ -114,6 +114,24 @@ queue_status_t queue_pop(queue_t *q, void *item)
     return ret_status;
 }
 
+queue_status_t queue_peek(const queue_t *q, void *item)
+{
+    if ((q == NULL) || (item == NULL))
+    {
+        return QUEUE_ERROR;
+    }
+    if (q->count == 0U)
+    {
+        return QUEUE_EMPTY;
+    }
+    const uint8_t *base = (const uint8_t *)q->buffer;
+    uint32_t offset = (uint32_t)q->head * q->buffer_element_size;
+
+    copy_bytes((uint8_t *)item, &base[offset], q->buffer_element_size);
+
+    return QUEUE_OK;
+}
+
 bool queue_is_empty(const queue_t *q)
 {
     bool is_empty = true;
@@ -190,7 +208,7 @@ PRIVATE void copy_bytes(uint8_t *dst, const uint8_t *src, uint16_t size)
  * @return true  — invalid argument(s).
  * @return false — all parameters valid.
  */
-static bool validate_init_arg(const queue_t *q, const void *buffer, uint16_t buffer_element_size, uint16_t queue_capacity)
+PRIVATE bool validate_init_arg(const queue_t *q, const void *buffer, uint16_t buffer_element_size, uint16_t queue_capacity)
 {
     bool invalid = false;
 
