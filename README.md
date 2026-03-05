@@ -1,5 +1,5 @@
 # 🧩 Queue Library (MISRA-C Compliant FIFO)
-
+![logo](https://private-user-images.githubusercontent.com/57457942/505634625-98cc5fb6-66e3-4740-ac1f-e153519fd6dc.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzI3Mzc5MjEsIm5iZiI6MTc3MjczNzYyMSwicGF0aCI6Ii81NzQ1Nzk0Mi81MDU2MzQ2MjUtOThjYzVmYjYtNjZlMy00NzQwLWFjMWYtZTE1MzUxOWZkNmRjLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNjAzMDUlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjYwMzA1VDE5MDcwMVomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPTg5ZGY0NjBlYWFjMzMxY2Y4NmQ5M2ExOTg3NzU4YzhhZmFkNzFjNDRlYzQ5NDllMjYxMWU4MzZjZjRkMjM0ZTYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.INl3qVxfZnOVsuk1Ji3eq8hqWD7oCNdsSAo7EwpbPL4)
 A **deterministic**, **no dynamic memory allocation**, and **MISRA-C:2012 compliant** FIFO queue with a *documented controlled deviation* [DV-QUEUE-001, Rule 11.4](https://niwciu.github.io/QUEUE_LIB/compliance/MISRA_Deviations) — designed for **embedded** and **safety-critical** applications (ISO 26262 / IEC 61508 / DO-178C).
 
 ---
