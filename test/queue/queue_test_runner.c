@@ -1,6 +1,5 @@
 #include "unity/fixture/unity_fixture.h"
 
-
 /* -------------------------- */
 /* Queue Initialization Tests */
 /* -------------------------- */
@@ -78,7 +77,7 @@ TEST_GROUP_RUNNER(queue_core)
     RUN_TEST_CASE(queue_core, GivenWrapAroundScenarioThenOrderIsPreserved);
     RUN_TEST_CASE(queue_core, GivenQueueFullWhenPushThenPushFailsAndCountUnchanged);
     RUN_TEST_CASE(queue_core, GivenEmptyQueueWhenPopMultipleTimesThenAlwaysReturnsQueueEmpty);
-} 
+}
 
 /* -------------------------- */
 /* DV_QUEUE_001: MISRA Deviation Tests */

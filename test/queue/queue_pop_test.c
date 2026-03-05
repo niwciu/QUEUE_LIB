@@ -49,7 +49,7 @@ TEST(queue_pop, GivenNonEmptyQueueWhenPopItemThenReturnsCorrectValue)
 // Test popping from an empty queue returns QUEUE_EMPTY
 TEST(queue_pop, GivenEmptyQueueWhenPopThenReturnsQueueEmptyStatus)
 {
-    q.count = 0;  // Ensure queue is empty
+    q.count = 0; // Ensure queue is empty
 
     int output = 0;
     queue_status_t result = queue_pop(&q, &output);
