@@ -55,4 +55,4 @@ Each deviation is verified through static analysis, self-review, and automated u
 * Updates are performed whenever a new deviation is introduced or justification is revised.
 * Document maintained under version control (`git`) and included in CI artifact deployment.
 * The current version of this document is published at:
-  [`https://niwciu.github.io/QUEUE_LIB/docs/compliance/MISRA_Deviations.md`](https://niwciu.github.io/QUEUE_LIB/docs/compliance/MISRA_Deviations.md)
+  [`https://niwciu.github.io/QUEUE_LIB/compliance/MISRA_Deviations/`](https://niwciu.github.io/QUEUE_LIB/compliance/MISRA_Deviations/)
